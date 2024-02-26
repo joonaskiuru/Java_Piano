@@ -5,17 +5,24 @@ import javax.swing.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+
+import java.awt.event.ActionEvent;
 
 
-public class Synth extends JFrame implements KeyListener  {
+public class Synth extends JFrame  {
 
     private static final Logger LOG = LogManager.getLogger(); // LOGGER
     public static Synthesizer synth;
     public static MidiChannel[] channels;
     public static Instrument[] instruments;
+
+    public static final int VELOCITY = 127;
+
+    public static boolean aPressed = false;
+    public static boolean sPressed = false;
+    public static boolean dPressed = false;
+
+    public static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;
 
     public Synth() {
 
@@ -38,7 +45,92 @@ public class Synth extends JFrame implements KeyListener  {
             LOG.error(e);
         }
 
-        addKeyListener(this);
+
+        // Create panel
+        JPanel panel = new JPanel();
+        add(panel);
+
+        // A Inputs
+        bindActions(panel, "A",
+            // Action for pressed key
+            new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    if (!aPressed) {
+                        System.out.println("A");
+                        aPressed = true;
+                        channels[0].noteOn(60, VELOCITY);
+                        try {
+                            Thread.sleep(1);
+
+                        } catch (InterruptedException x) {
+                            LOG.error(x);
+                        }
+                    }
+                }
+            },
+            // Action for released key
+            new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    System.out.println("A released");
+                    channels[0].noteOff(60);
+                    aPressed = false;
+                }
+            }
+        );
+
+        // S Inputs
+        bindActions(panel, "S",
+                // Action for pressed key
+                new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        if (!sPressed) {
+                            sPressed = true;
+                            channels[0].noteOn(62, VELOCITY);
+                            try {
+                                Thread.sleep(1);
+
+                            } catch (InterruptedException x) {
+                                LOG.error(x);
+                            }
+                        }
+                    }
+                },
+                // Action for released key
+                new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        channels[0].noteOff(62);
+                        sPressed = false;
+                    }
+                }
+        );
+
+        // A Inputs
+        bindActions(panel, "D",
+                // Action for pressed key
+                new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        if (!dPressed) {
+                            dPressed = true;
+                            channels[0].noteOn(64, VELOCITY);
+                            try {
+                                Thread.sleep(1);
+
+                            } catch (InterruptedException x) {
+                                LOG.error(x);
+                            }
+                        }
+                    }
+                },
+                // Action for released key
+                new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        channels[0].noteOff(64);
+                        dPressed = false;
+                    }
+                }
+        );
+
+
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
         setVisible(true);
@@ -47,55 +139,20 @@ public class Synth extends JFrame implements KeyListener  {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public static void play(int note, int velocity) {
-        channels[0].noteOn(note, velocity);
+    private void bindActions(JComponent component,
+                             String key, Action pressedAction, Action releasedAction) {
 
-        // Turn the note off
-        channels[0].noteOff(note);
-    }
+        String pressed = key + "PressedAction";
+        String released = key + "ReleasedAction";
 
-    public static void stop(int note) {
+        // Map inputs for pressed key
+        component.getInputMap(IFW).put(KeyStroke.getKeyStroke(key),pressed);
+        component.getActionMap().put(pressed,pressedAction);
 
-        // Turn the note off
-        channels[0].noteOff(note);
-    }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
+        // Map inputs for released key
+        component.getInputMap(IFW).put(KeyStroke.getKeyStroke("released " + key),released);
+        component.getActionMap().put(released,releasedAction);
 
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        switch (e.getKeyChar()){
-            case 'a':
-                System.out.println("A");
-                play(60,127);
-                break;
-            case 's':
-                play(62,127);
-                break;
-            case 'd':
-                play(64,127);
-                break;
-
-
-        }
-
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        switch (e.getKeyChar()){
-            case 'a':
-                stop(60);
-                break;
-            case 's':
-                stop(62);
-                break;
-            case 'd':
-                stop(64);
-                break;
-        }
-    }
 }

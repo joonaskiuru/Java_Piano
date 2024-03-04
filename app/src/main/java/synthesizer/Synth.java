@@ -1,5 +1,6 @@
 package synthesizer;
 
+import synthesizer.keys.*;
 import javax.sound.midi.*;
 import javax.swing.*;
 
@@ -7,6 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.event.ActionEvent;
+import java.awt.geom.*;
+import java.awt.*;
 
 
 public class Synth extends JFrame  {
@@ -19,6 +22,7 @@ public class Synth extends JFrame  {
     public static final int VELOCITY = 127;
 
     public static boolean aPressed = false;
+    public static boolean wPressed = false;
     public static boolean sPressed = false;
     public static boolean dPressed = false;
 
@@ -45,10 +49,31 @@ public class Synth extends JFrame  {
             LOG.error(e);
         }
 
+        // Set size of the frame
+        this.setSize(300,300);
+        this.setLayout(new FlowLayout());
+
 
         // Create panel
         JPanel panel = new JPanel();
         add(panel);
+
+        // Create Button for C note, set size & add to frame
+        JButton aButton = new JButton("C");
+        aButton.setPreferredSize(new Dimension(50,200));
+        add(aButton);
+
+        // Create Button for D note, set size & add to frame
+        JButton sButton = new JButton("D");
+        sButton.setPreferredSize(new Dimension(50,200));
+        add(sButton);
+
+        // Create Button for E note, set size & add to frame
+        JButton dButton = new JButton("E");
+        dButton.setPreferredSize(new Dimension(50,200));
+        add(dButton);
+
+
 
         // A Inputs
         bindActions(panel, "A",
@@ -56,26 +81,42 @@ public class Synth extends JFrame  {
             new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
                     if (!aPressed) {
-                        System.out.println("A");
                         aPressed = true;
                         channels[0].noteOn(60, VELOCITY);
-                        try {
-                            Thread.sleep(1);
-
-                        } catch (InterruptedException x) {
-                            LOG.error(x);
-                        }
+                        aButton.setBackground(Color.GRAY);
                     }
                 }
             },
             // Action for released key
             new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
-                    System.out.println("A released");
                     channels[0].noteOff(60);
                     aPressed = false;
+                    aButton.setBackground(Color.WHITE);
                 }
             }
+        );
+
+        // W Inputs
+        bindActions(panel, "W",
+                // Action for pressed key
+                new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        if (!wPressed) {
+                            wPressed = true;
+                            channels[0].noteOn(61, VELOCITY);
+
+                        }
+                    }
+                },
+                // Action for released key
+                new AbstractAction() {
+                    public void actionPerformed(ActionEvent e) {
+                        System.out.println("A released");
+                        channels[0].noteOff(61);
+                        wPressed = false;
+                    }
+                }
         );
 
         // S Inputs
@@ -86,12 +127,7 @@ public class Synth extends JFrame  {
                         if (!sPressed) {
                             sPressed = true;
                             channels[0].noteOn(62, VELOCITY);
-                            try {
-                                Thread.sleep(1);
-
-                            } catch (InterruptedException x) {
-                                LOG.error(x);
-                            }
+                            sButton.setBackground(Color.GRAY);
                         }
                     }
                 },
@@ -100,6 +136,7 @@ public class Synth extends JFrame  {
                     public void actionPerformed(ActionEvent e) {
                         channels[0].noteOff(62);
                         sPressed = false;
+                        sButton.setBackground(Color.WHITE);
                     }
                 }
         );
@@ -112,12 +149,7 @@ public class Synth extends JFrame  {
                         if (!dPressed) {
                             dPressed = true;
                             channels[0].noteOn(64, VELOCITY);
-                            try {
-                                Thread.sleep(1);
-
-                            } catch (InterruptedException x) {
-                                LOG.error(x);
-                            }
+                            dButton.setBackground(Color.GRAY);
                         }
                     }
                 },
@@ -126,6 +158,7 @@ public class Synth extends JFrame  {
                     public void actionPerformed(ActionEvent e) {
                         channels[0].noteOff(64);
                         dPressed = false;
+                        dButton.setBackground(Color.WHITE);
                     }
                 }
         );

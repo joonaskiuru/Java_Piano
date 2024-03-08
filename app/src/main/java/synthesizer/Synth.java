@@ -67,14 +67,14 @@ public class Synth extends JFrame  {
             LOG.error(e);
         }
 
-        // Set size of the frame
-        // this.setSize(300,300);
-        this.setLayout(new BorderLayout());
+        this.setLayout(new BorderLayout()); // Use BorderLayout
+        this.setTitle("Virtual Keyboard"); // Set Title
+        this.setResizable(false); // Disable resizing
 
+        // Create the top panel
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel,BoxLayout.Y_AXIS));
-        JLabel title = new JLabel("VIRTUAL KEYBOARD");
-        topPanel.add(title);
+        topPanel.setBorder(BorderFactory.createEtchedBorder());
 
         JLabel instructions = new JLabel("Play the piano using keyboard keys: A,W,S,E,D,F,T,G,Y,H,U,J");
         topPanel.add(instructions);
@@ -125,22 +125,6 @@ public class Synth extends JFrame  {
             offset += 100;
         }
 
-        // Create panel layers to display black keys on top of white keys
-        JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension(700, 450));
-        whiteKeysPanel.setBounds(0, 100, 700, 350);
-        blackKeysPanel.setBounds(0, 100, 700, 350);
-        topPanel.setBounds(0,0,700,100);
-        layeredPane.add(topPanel, JLayeredPane.DEFAULT_LAYER);
-        layeredPane.add(whiteKeysPanel, JLayeredPane.DEFAULT_LAYER);
-        layeredPane.add(blackKeysPanel, JLayeredPane.PALETTE_LAYER);
-
-
-        this.add(layeredPane,BorderLayout.CENTER);
-        this.pack();
-        this.setLocationRelativeTo(null); // Center the frame
-
-
         int noteValue = 60;
         int counter = 0;
         for(String key : PRESSEDKEYSWHITE){
@@ -175,6 +159,24 @@ public class Synth extends JFrame  {
             }
 
         }
+
+        // Create panel layers to display black keys on top of white keys
+        JLayeredPane layeredPane = new JLayeredPane();
+        layeredPane.setPreferredSize(new Dimension(700, 400));
+        whiteKeysPanel.setBounds(0, 50, 700, 350);
+        blackKeysPanel.setBounds(0, 50, 700, 350);
+        topPanel.setBounds(0,0,700,50);
+        layeredPane.add(topPanel, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(whiteKeysPanel, JLayeredPane.DEFAULT_LAYER);
+        layeredPane.add(blackKeysPanel, JLayeredPane.PALETTE_LAYER);
+
+
+        this.add(layeredPane,BorderLayout.CENTER);
+        this.pack();
+        this.setLocationRelativeTo(null); // Center the frame
+
+
+
 
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);

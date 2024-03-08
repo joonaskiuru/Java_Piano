@@ -1,6 +1,5 @@
 package synthesizer;
 
-import synthesizer.keys.*;
 import javax.sound.midi.*;
 import javax.swing.*;
 
@@ -72,13 +71,18 @@ public class Synth extends JFrame  {
         this.setResizable(false); // Disable resizing
 
         // Create the top panel
-        JPanel topPanel = new JPanel();
+        ImagePanel topPanel = new ImagePanel();
         topPanel.setLayout(new BoxLayout(topPanel,BoxLayout.Y_AXIS));
         topPanel.setBorder(BorderFactory.createEtchedBorder());
 
         JLabel instructions = new JLabel("Play the piano using keyboard keys: A,W,S,E,D,F,T,G,Y,H,U,J");
+        instructions.setForeground(Color.WHITE);
+        //instructions.setBackground(Color.WHITE);
+        //instructions.setOpaque(true);
         topPanel.add(instructions);
 
+        // Create an ImageIcon from an image file
+        ImageIcon imageIcon = new ImageIcon("PianoBG.jpg"); // Replace with your image path
 
         // Create panel
         JPanel whiteKeysPanel = new JPanel();
@@ -89,10 +93,6 @@ public class Synth extends JFrame  {
         blackKeysPanel.setLayout(null);
         //blackKeysPanel.setPreferredSize(new Dimension(100,200));
         blackKeysPanel.setOpaque(false);
-
-
-
-
 
         // Create buttons for each note (white keys)
         for(String note : WHITEKEYS) {

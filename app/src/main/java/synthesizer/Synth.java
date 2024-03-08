@@ -71,6 +71,15 @@ public class Synth extends JFrame  {
         // this.setSize(300,300);
         this.setLayout(new BorderLayout());
 
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel,BoxLayout.Y_AXIS));
+        JLabel title = new JLabel("VIRTUAL KEYBOARD");
+        topPanel.add(title);
+
+        JLabel instructions = new JLabel("Play the piano using keyboard keys: A,W,S,E,D,F,T,G,Y,H,U,J");
+        topPanel.add(instructions);
+
+
         // Create panel
         JPanel whiteKeysPanel = new JPanel();
         whiteKeysPanel.setLayout(new GridLayout(1,7));
@@ -106,6 +115,7 @@ public class Synth extends JFrame  {
                 JButton button = new JButton(note);
                 button.setBounds(offset,0,100,175);
                 button.setBackground(Color.BLACK);
+                button.setForeground(Color.WHITE);
                 button.setMargin(new Insets(10, 10, 10, 10));
                 button.setBorder(BorderFactory.createLineBorder(Color.WHITE));
                 blackKeysPanel.add(button);
@@ -115,16 +125,21 @@ public class Synth extends JFrame  {
             offset += 100;
         }
 
+        // Create panel layers to display black keys on top of white keys
         JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setPreferredSize(new Dimension(700, 350));
-        whiteKeysPanel.setBounds(0, 0, 700, 350);
-        blackKeysPanel.setBounds(0, 0, 700, 350);
+        layeredPane.setPreferredSize(new Dimension(700, 450));
+        whiteKeysPanel.setBounds(0, 100, 700, 350);
+        blackKeysPanel.setBounds(0, 100, 700, 350);
+        topPanel.setBounds(0,0,700,100);
+        layeredPane.add(topPanel, JLayeredPane.DEFAULT_LAYER);
         layeredPane.add(whiteKeysPanel, JLayeredPane.DEFAULT_LAYER);
         layeredPane.add(blackKeysPanel, JLayeredPane.PALETTE_LAYER);
 
 
         this.add(layeredPane,BorderLayout.CENTER);
         this.pack();
+        this.setLocationRelativeTo(null); // Center the frame
+
 
         int noteValue = 60;
         int counter = 0;
@@ -134,8 +149,7 @@ public class Synth extends JFrame  {
             pressedBooleans.put(pressedValue,false);
             bindActionsToKeys(whiteKeysPanel,key,noteValue,WHITEKEYS[counter],pressedValue);
 
-            // If note is E, increment midi value with 1 , else with 2
-            if(noteValue == 64) {
+            if(noteValue == 64) {  // If note is E, increment midi value with 1 , else with 2
                 noteValue += 1;
             } else {
                 noteValue += 2;

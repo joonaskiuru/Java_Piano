@@ -98,6 +98,7 @@ public class Synth extends JFrame  {
         for(String note : WHITEKEYS) {
             JButton button = new JButton(note); // Create a button for a key
             button.setPreferredSize(new Dimension(100,350)); // Set size for the key
+            button.setEnabled(false); // Disable mouse clicking behaviour
             button.setBackground(Color.WHITE);
             button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             button.setVerticalAlignment(SwingConstants.BOTTOM);
@@ -114,6 +115,7 @@ public class Synth extends JFrame  {
             if(!note.isEmpty()) {
                 JButton button = new JButton(note);
                 button.setBounds(offset,0,100,175);
+                button.setEnabled(false); // Disable mouse clicking behaviour
                 button.setBackground(Color.BLACK);
                 button.setForeground(Color.WHITE);
                 button.setMargin(new Insets(10, 10, 10, 10));

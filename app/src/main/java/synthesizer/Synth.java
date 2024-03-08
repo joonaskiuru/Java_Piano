@@ -34,11 +34,17 @@ public class Synth extends JFrame  {
 
     public static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;
 
-        // Array of white key labels (notes)
+    // Array of white key labels (notes)
     public static final String[] WHITEKEYS = {"C", "D", "E", "F", "G", "A", "B"};
 
     // Array of black key labels (notes)
     public static final String[] BLACKKEYS = {"C#", "D#", "", "F#", "G#", "A#", ""};
+
+    // Keyboard keys that activate white keys
+    public static final String[] PRESSEDKEYSWHITE = {"A","S","D","F","G","H","J"};
+
+    // Keyboard keys that activate black keys
+    public static final String[] PRESSEDKEYSBLACK = {"W","E","T","Y","U"};
 
     public Synth() {
 
@@ -77,11 +83,7 @@ public class Synth extends JFrame  {
 
 
 
-        // Keyboard keys that activate white keys
-        String[] pressedKeysWhite = {"A","S","D","F","G","H","J"};
 
-        // Keyboard keys that activate black keys
-        String[] pressedKeysBlack = {"W","E","T","Y","U"};
 
         // Create buttons for each note (white keys)
         for(String note : WHITEKEYS) {
@@ -126,7 +128,7 @@ public class Synth extends JFrame  {
 
         int noteValue = 60;
         int counter = 0;
-        for(String key : pressedKeysWhite){
+        for(String key : PRESSEDKEYSWHITE){
 
             String pressedValue = key + "pressed";
             pressedBooleans.put(pressedValue,false);
@@ -143,19 +145,21 @@ public class Synth extends JFrame  {
         }
         noteValue = 61;
         counter = 0;
-        for(String key : pressedKeysBlack){
+        for(String key : PRESSEDKEYSBLACK){
 
             String pressedValue = key + "pressed";
             pressedBooleans.put(pressedValue,false);
             bindActionsToKeys(blackKeysPanel,key,noteValue,BLACKKEYS[counter],pressedValue);
-            
+
             // If note is D#, increment midi value with 3 , else with 2
             if(noteValue == 63) {
                 noteValue += 3;
+                counter += 2;
             } else {
                 noteValue += 2;
+                counter++;
             }
-            counter++;
+
         }
 
         setFocusable(true);
@@ -184,12 +188,16 @@ public class Synth extends JFrame  {
 
     private void bindActionsToKeys(JPanel panel, String key, int noteValue, String note, String pressedValue) {
 
+        // Default Background Color, white for white keys and black for black keys
         Color defaultColor;
-        if(Arrays.asList(BLACKKEYS).contains(key))
+        Color defaultBgColor;
+
+        if(Arrays.asList(PRESSEDKEYSBLACK).contains(key))
             defaultColor = Color.BLACK;
         else
             defaultColor = Color.WHITE;
 
+        // Action bindings
         bindActions(panel, key,
             // Action for pressed key
             new AbstractAction() {

@@ -1,14 +1,28 @@
 package synthesizer;
 
-import javax.sound.midi.*;
-import javax.swing.*;
+import javax.sound.midi.Instrument;
+import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Synthesizer;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.awt.event.ActionEvent;
-import java.awt.geom.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
@@ -22,15 +36,8 @@ public class Synth extends JFrame  {
 
     public static final int VELOCITY = 127;
 
-    public static boolean aPressed = false;
-    public static boolean wPressed = false;
-    public static boolean sPressed = false;
-    public static boolean dPressed = false;
-
-    private static Map<String, JButton> noteButtons = new HashMap<>();
-    private static Map<String, Integer> keyValues = new HashMap<>();
-    private static Map<String, Boolean> pressedBooleans = new HashMap<>();
-
+    private static final Map<String, JButton> noteButtons = new HashMap<>();
+    private static final Map<String, Boolean> pressedBooleans = new HashMap<>();
     public static final int IFW = JComponent.WHEN_IN_FOCUSED_WINDOW;
 
     // Array of white key labels (notes)
@@ -77,12 +84,7 @@ public class Synth extends JFrame  {
 
         JLabel instructions = new JLabel("Play the piano using keyboard keys: A,W,S,E,D,F,T,G,Y,H,U,J");
         instructions.setForeground(Color.WHITE);
-        //instructions.setBackground(Color.WHITE);
-        //instructions.setOpaque(true);
         topPanel.add(instructions);
-
-        // Create an ImageIcon from an image file
-        ImageIcon imageIcon = new ImageIcon("PianoBG.jpg"); // Replace with your image path
 
         // Create panel
         JPanel whiteKeysPanel = new JPanel();
@@ -91,7 +93,6 @@ public class Synth extends JFrame  {
         // Create panel
         JPanel blackKeysPanel = new JPanel();
         blackKeysPanel.setLayout(null);
-        //blackKeysPanel.setPreferredSize(new Dimension(100,200));
         blackKeysPanel.setOpaque(false);
 
         // Create buttons for each note (white keys)
@@ -135,23 +136,23 @@ public class Synth extends JFrame  {
             pressedBooleans.put(pressedValue,false);
             bindActionsToKeys(whiteKeysPanel,key,noteValue,WHITEKEYS[counter],pressedValue);
 
-            if(noteValue == 64) {  // If note is E, increment midi value with 1 , else with 2
-                noteValue += 1;
-            } else {
-                noteValue += 2;
-            }
+            // If note is E (64), increment midi value with 1 , else with 2
+            noteValue += (noteValue == 64) ? 1 : 2;
 
             counter++;
         }
+
+        // Reset note value & counter
         noteValue = 61;
         counter = 0;
+
         for(String key : PRESSEDKEYSBLACK){
 
             String pressedValue = key + "pressed";
             pressedBooleans.put(pressedValue,false);
             bindActionsToKeys(blackKeysPanel,key,noteValue,BLACKKEYS[counter],pressedValue);
 
-            // If note is D#, increment midi value with 3 , else with 2
+            // If note is D# (63), increment midi value with 3 , else with 2
             if(noteValue == 63) {
                 noteValue += 3;
                 counter += 2;
@@ -159,15 +160,19 @@ public class Synth extends JFrame  {
                 noteValue += 2;
                 counter++;
             }
-
         }
 
         // Create panel layers to display black keys on top of white keys
         JLayeredPane layeredPane = new JLayeredPane();
         layeredPane.setPreferredSize(new Dimension(700, 400));
-        whiteKeysPanel.setBounds(0, 50, 700, 350);
-        blackKeysPanel.setBounds(0, 50, 700, 350);
+
+        // Define and set bounds
+        Rectangle bounds = new Rectangle(0, 50, 700, 350);
+        whiteKeysPanel.setBounds(bounds);
+        blackKeysPanel.setBounds(bounds);
         topPanel.setBounds(0,0,700,50);
+
+        // Add panels
         layeredPane.add(topPanel, JLayeredPane.DEFAULT_LAYER);
         layeredPane.add(whiteKeysPanel, JLayeredPane.DEFAULT_LAYER);
         layeredPane.add(blackKeysPanel, JLayeredPane.PALETTE_LAYER);
@@ -176,9 +181,6 @@ public class Synth extends JFrame  {
         this.add(layeredPane,BorderLayout.CENTER);
         this.pack();
         this.setLocationRelativeTo(null); // Center the frame
-
-
-
 
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
@@ -208,7 +210,6 @@ public class Synth extends JFrame  {
 
         // Default Background Color, white for white keys and black for black keys
         Color defaultColor;
-        Color defaultBgColor;
 
         if(Arrays.asList(PRESSEDKEYSBLACK).contains(key))
             defaultColor = Color.BLACK;
@@ -220,8 +221,8 @@ public class Synth extends JFrame  {
             // Action for pressed key
             new AbstractAction() {
                 public void actionPerformed(ActionEvent e) {
-                    if (pressedBooleans.get(pressedValue) == false) {
-                        pressedBooleans.put(pressedValue,true);
+                    if (!pressedBooleans.get(pressedValue)) {
+                        pressedBooleans.put(pressedValue, true);
                         channels[0].noteOn(noteValue, VELOCITY);
                         JButton key = noteButtons.get(note);
                         key.setBackground(Color.GRAY);
@@ -239,5 +240,4 @@ public class Synth extends JFrame  {
             }
         );
     }
-
 }
